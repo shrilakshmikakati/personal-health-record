@@ -1,0 +1,38 @@
+{
+  "canisters": {
+    "internet_identity": {
+      "candid": "https://github.com/dfinity/internet-identity/releases/latest/download/internet_identity.did",
+      "frontend": {},
+      "remote": {
+        "id": {
+          "ic": "rdmx6-jaaaa-aaaaa-aaadq-cai"
+        }
+      },
+      "type": "custom",
+      "wasm": "https://github.com/dfinity/internet-identity/releases/latest/download/internet_identity_dev.wasm.gz"
+    },
+    "personal-health-record-backend": {
+      "candid": "src/personal-health-record-backend/personal-health-record-backend.did",
+      "package": "personal-health-record-backend",
+      "type": "rust"
+    },
+    "personal-health-record-frontend": {
+      "dependencies": [
+        "personal-health-record-backend"
+      ],
+      "source": [
+        "src/personal-health-record-frontend/dist"
+      ],
+      "type": "assets",
+      "workspace": "personal-health-record-frontend"
+    }
+  },
+  "defaults": {
+    "build": {
+      "args": "",
+      "packtool": ""
+    }
+  },
+  "output_env_file": ".env",
+  "version": 1
+}
