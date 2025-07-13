@@ -1,0 +1,163 @@
+type ApiResponse = variant {
+  success: record {
+    success: bool;
+    data: opt variant {
+      HealthRecord: HealthRecord;
+      Patient: Patient;
+      HealthcareProvider: HealthcareProvider;
+      ShareRequest: ShareRequest;
+      VecHealthRecord: vec HealthRecord;
+      VecHealthcareProvider: vec HealthcareProvider;
+      VecShareRequest: vec ShareRequest;
+      String: text;
+      Stats: vec record { text; nat64 };
+    };
+    error: opt text;
+  };
+  error: record {
+    success: bool;
+    data: opt variant {
+      HealthRecord: HealthRecord;
+      Patient: Patient;
+      HealthcareProvider: HealthcareProvider;
+      ShareRequest: ShareRequest;
+      VecHealthRecord: vec HealthRecord;
+      VecHealthcareProvider: vec HealthcareProvider;
+      VecShareRequest: vec ShareRequest;
+      String: text;
+      Stats: vec record { text; nat64 };
+    };
+    error: opt text;
+  };
+};
+
+type CreateRecordRequest = record {
+  title: text;
+  description: text;
+  record_type: RecordType;
+  data: RecordData;
+};
+
+type EmergencyContact = record {
+  name: text;
+  relationship: text;
+  phone: text;
+  email: text;
+};
+
+type HealthRecord = record {
+  id: text;
+  patient_id: principal;
+  title: text;
+  description: text;
+  record_type: RecordType;
+  date_created: nat64;
+  date_updated: nat64;
+  data: RecordData;
+  shared_with: vec principal;
+  is_public: bool;
+};
+
+type HealthcareProvider = record {
+  id: principal;
+  name: text;
+  specialty: text;
+  license_number: text;
+  hospital_affiliation: text;
+  email: text;
+  phone: text;
+  verified: bool;
+  created_at: nat64;
+};
+
+type Medication = record {
+  name: text;
+  dosage: text;
+  frequency: text;
+  start_date: nat64;
+  end_date: opt nat64;
+  prescribed_by: text;
+};
+
+type Patient = record {
+  id: principal;
+  name: text;
+  email: text;
+  date_of_birth: nat64;
+  gender: text;
+  phone: text;
+  address: text;
+  emergency_contact: EmergencyContact;
+  created_at: nat64;
+};
+
+type RecordData = record {
+  medical_data: vec record { text; text };
+  attachments: vec text;
+  vital_signs: opt VitalSigns;
+  medications: vec Medication;
+  notes: text;
+};
+
+type RecordType = variant {
+  MedicalHistory;
+  Prescription;
+  LabResult;
+  Vaccination;
+  Allergy;
+  Surgery;
+  Consultation;
+  Other;
+};
+
+type ShareRequest = record {
+  id: text;
+  patient_id: principal;
+  provider_id: principal;
+  record_ids: vec text;
+  requested_at: nat64;
+  expires_at: nat64;
+  status: ShareStatus;
+  message: text;
+};
+
+type ShareStatus = variant {
+  Pending;
+  Approved;
+  Rejected;
+  Expired;
+};
+
+type UpdateRecordRequest = record {
+  title: opt text;
+  description: opt text;
+  data: opt RecordData;
+};
+
+type VitalSigns = record {
+  blood_pressure: opt text;
+  heart_rate: opt nat32;
+  temperature: opt float32;
+  weight: opt float32;
+  height: opt float32;
+  oxygen_saturation: opt nat32;
+};
+
+service : {
+  approve_share_request: (text) -> (ApiResponse);
+  create_health_record: (CreateRecordRequest) -> (ApiResponse);
+  create_share_request: (principal, vec text, text) -> (ApiResponse);
+  delete_health_record: (text) -> (ApiResponse);
+  get_all_healthcare_providers: () -> (ApiResponse) query;
+  get_health_record: (text) -> (ApiResponse) query;
+  get_healthcare_provider_profile: () -> (ApiResponse) query;
+  get_my_records: () -> (ApiResponse) query;
+  get_my_share_requests: () -> (ApiResponse) query;
+  get_patient_profile: () -> (ApiResponse) query;
+  get_shared_records: () -> (ApiResponse) query;
+  get_system_stats: () -> (ApiResponse) query;
+  register_healthcare_provider: (HealthcareProvider) -> (ApiResponse);
+  register_patient: (Patient) -> (ApiResponse);
+  update_health_record: (text, UpdateRecordRequest) -> (ApiResponse);
+  update_patient_profile: (Patient) -> (ApiResponse);
+}

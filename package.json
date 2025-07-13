@@ -1,18 +1,28 @@
 {
-  "engines": {
-    "node": ">=16.0.0",
-    "npm": ">=7.0.0"
-  },
-  "name": "personal-health-record",
+  "name": "phr-icp-simple",
+  "version": "1.0.0",
+  "description": "Personal Health Records on Internet Computer",
   "scripts": {
-    "build": "npm run build --workspaces --if-present",
-    "prebuild": "npm run prebuild --workspaces --if-present",
-    "pretest": "npm run prebuild --workspaces --if-present",
-    "start": "npm start --workspaces --if-present",
-    "test": "npm test --workspaces --if-present"
+    "start": "bash scripts/start.sh",
+    "build": "cd frontend && npm run build",
+    "deploy": "bash scripts/deploy.sh",
+    "test": "cd frontend && npm test"
   },
-  "type": "module",
-  "workspaces": [
-    "src/personal-health-record-frontend"
-  ]
+  "keywords": [
+    "blockchain",
+    "healthcare",
+    "icp",
+    "privacy"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "dependencies": {
+    "@dfinity/agent": "^2.4.1",
+    "@dfinity/auth-client": "^2.4.1",
+    "@dfinity/candid": "^2.4.1",
+    "@dfinity/principal": "^2.4.1"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.23"
+  }
 }

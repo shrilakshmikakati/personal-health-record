@@ -103,7 +103,7 @@ pub struct ShareRequest {
     pub message: String,
 }
 
-#[derive(CandidType, Deserialize, Serialize, Clone, Debug)]
+#[derive(CandidType, Deserialize, Serialize, Clone, Debug, PartialEq)]
 pub enum ShareStatus {
     Pending,
     Approved,
@@ -121,7 +121,6 @@ pub struct CreateRecordRequest {
 
 #[derive(CandidType, Deserialize, Serialize, Clone, Debug)]
 pub struct UpdateRecordRequest {
-    pub id: String,
     pub title: Option<String>,
     pub description: Option<String>,
     pub data: Option<RecordData>,

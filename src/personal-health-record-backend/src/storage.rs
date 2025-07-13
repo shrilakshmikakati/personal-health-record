@@ -2,7 +2,6 @@ use candid::Principal;
 use ic_cdk::api::time;
 use std::collections::HashMap;
 use std::cell::RefCell;
-use uuid::Uuid;
 
 use crate::types::*;
 
@@ -13,6 +12,19 @@ thread_local! {
     static HEALTHCARE_PROVIDERS: RefCell<HashMap<Principal, HealthcareProvider>> = RefCell::new(HashMap::new());
     static SHARE_REQUESTS: RefCell<HashMap<String, ShareRequest>> = RefCell::new(HashMap::new());
     static PATIENT_RECORDS: RefCell<HashMap<Principal, Vec<String>>> = RefCell::new(HashMap::new());
+    static RECORD_COUNTER: RefCell<u64> = RefCell::new(0);
+}
+
+// Utility function to generate unique IDs without getrandom
+fn generate_unique_id() -> String {
+    let caller = ic_cdk::caller();
+    let timestamp = time();
+    let counter = RECORD_COUNTER.with(|c| {
+        let mut counter = c.borrow_mut();
+        *counter += 1;
+        *counter
+    });
+    format!("{}-{}-{}", caller.to_text(), timestamp, counter)
 }
 
 // Health Record Functions
@@ -20,7 +32,7 @@ pub fn create_health_record(
     patient_id: Principal,
     request: CreateRecordRequest,
 ) -> Result<HealthRecord, String> {
-    let record_id = Uuid::new_v4().to_string();
+    let record_id = generate_unique_id();
     let now = time();
 
     let record = HealthRecord {
@@ -198,7 +210,7 @@ pub fn create_share_request(
     record_ids: Vec<String>,
     message: String,
 ) -> Result<ShareRequest, String> {
-    let request_id = Uuid::new_v4().to_string();
+    let request_id = generate_unique_id();
     let now = time();
     let expires_at = now + (30 * 24 * 60 * 60 * 1_000_000_000); // 30 days in nanoseconds
 
@@ -304,4 +316,17 @@ pub fn can_access_record(record_id: &str, caller: Principal) -> bool {
             false
         }
     })
+}
+
+// Stats Functions
+pub fn get_total_records_count() -> u64 {
+    HEALTH_RECORDS.with(|records| records.borrow().len() as u64)
+}
+
+pub fn get_total_patients_count() -> u64 {
+    PATIENTS.with(|patients| patients.borrow().len() as u64)
+}
+
+pub fn get_total_providers_count() -> u64 {
+    HEALTHCARE_PROVIDERS.with(|providers| providers.borrow().len() as u64)
 }
