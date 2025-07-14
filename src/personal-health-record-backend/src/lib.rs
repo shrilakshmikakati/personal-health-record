@@ -10,7 +10,7 @@ use types::*;
 // Health Record Management
 #[update]
 fn create_health_record(request: CreateRecordRequest) -> ApiResponse<HealthRecord> {
-    let caller = ic_cdk::caller();
+    let caller = ic_cdk::api::msg_caller();
     
     match storage::create_health_record(caller, request) {
         Ok(record) => ApiResponse::success(record),
@@ -20,7 +20,7 @@ fn create_health_record(request: CreateRecordRequest) -> ApiResponse<HealthRecor
 
 #[update]
 fn update_health_record(record_id: String, request: UpdateRecordRequest) -> ApiResponse<HealthRecord> {
-    let caller = ic_cdk::caller();
+    let caller = ic_cdk::api::msg_caller();
     
     match storage::update_health_record(&record_id, caller, request) {
         Ok(record) => ApiResponse::success(record),
@@ -30,7 +30,7 @@ fn update_health_record(record_id: String, request: UpdateRecordRequest) -> ApiR
 
 #[update]
 fn delete_health_record(record_id: String) -> ApiResponse<String> {
-    let caller = ic_cdk::caller();
+    let caller = ic_cdk::api::msg_caller();
     
     match storage::delete_health_record(&record_id, caller) {
         Ok(_) => ApiResponse::success("Record deleted successfully".to_string()),
@@ -40,7 +40,7 @@ fn delete_health_record(record_id: String) -> ApiResponse<String> {
 
 #[query]
 fn get_health_record(record_id: String) -> ApiResponse<HealthRecord> {
-    let caller = ic_cdk::caller();
+    let caller = ic_cdk::api::msg_caller();
     
     if !storage::can_access_record(&record_id, caller) {
         return ApiResponse::error("Unauthorized access".to_string());
@@ -54,7 +54,7 @@ fn get_health_record(record_id: String) -> ApiResponse<HealthRecord> {
 
 #[query]
 fn get_my_records() -> ApiResponse<Vec<HealthRecord>> {
-    let caller = ic_cdk::caller();
+    let caller = ic_cdk::api::msg_caller();
     let records = storage::get_caller_records(caller);
     ApiResponse::success(records)
 }
@@ -70,7 +70,7 @@ fn register_patient(patient: Patient) -> ApiResponse<Patient> {
 
 #[query]
 fn get_patient_profile() -> ApiResponse<Patient> {
-    let caller = ic_cdk::caller();
+    let caller = ic_cdk::api::msg_caller();
     
     match storage::get_patient(caller) {
         Some(patient) => ApiResponse::success(patient),
@@ -80,7 +80,7 @@ fn get_patient_profile() -> ApiResponse<Patient> {
 
 #[update]
 fn update_patient_profile(patient: Patient) -> ApiResponse<Patient> {
-    let caller = ic_cdk::caller();
+    let caller = ic_cdk::api::msg_caller();
     
     match storage::update_patient(caller, patient) {
         Ok(patient) => ApiResponse::success(patient),
@@ -99,7 +99,7 @@ fn register_healthcare_provider(provider: HealthcareProvider) -> ApiResponse<Hea
 
 #[query]
 fn get_healthcare_provider_profile() -> ApiResponse<HealthcareProvider> {
-    let caller = ic_cdk::caller();
+    let caller = ic_cdk::api::msg_caller();
     
     match storage::get_healthcare_provider(caller) {
         Some(provider) => ApiResponse::success(provider),
@@ -120,7 +120,7 @@ fn create_share_request(
     record_ids: Vec<String>,
     message: String,
 ) -> ApiResponse<ShareRequest> {
-    let caller = ic_cdk::caller();
+    let caller = ic_cdk::api::msg_caller();
     
     match storage::create_share_request(caller, provider_id, record_ids, message) {
         Ok(request) => ApiResponse::success(request),
@@ -130,7 +130,7 @@ fn create_share_request(
 
 #[update]
 fn approve_share_request(request_id: String) -> ApiResponse<ShareRequest> {
-    let caller = ic_cdk::caller();
+    let caller = ic_cdk::api::msg_caller();
     
     match storage::approve_share_request(&request_id, caller) {
         Ok(request) => ApiResponse::success(request),
@@ -140,14 +140,14 @@ fn approve_share_request(request_id: String) -> ApiResponse<ShareRequest> {
 
 #[query]
 fn get_my_share_requests() -> ApiResponse<Vec<ShareRequest>> {
-    let caller = ic_cdk::caller();
+    let caller = ic_cdk::api::msg_caller();
     let requests = storage::get_share_requests_for_patient(caller);
     ApiResponse::success(requests)
 }
 
 #[query]
 fn get_shared_records() -> ApiResponse<Vec<HealthRecord>> {
-    let caller = ic_cdk::caller();
+    let caller = ic_cdk::api::msg_caller();
     let records = storage::get_shared_records_for_provider(caller);
     ApiResponse::success(records)
 }
@@ -155,7 +155,7 @@ fn get_shared_records() -> ApiResponse<Vec<HealthRecord>> {
 // System functions
 #[query]
 fn get_system_stats() -> ApiResponse<HashMap<String, u64>> {
-    let caller = ic_cdk::caller();
+    let caller = ic_cdk::api::msg_caller();
     
     // Only allow system stats for registered users
     if storage::get_patient(caller).is_none() && storage::get_healthcare_provider(caller).is_none() {
@@ -173,7 +173,6 @@ fn get_system_stats() -> ApiResponse<HashMap<String, u64>> {
 ic_cdk::export_candid!();
 
 // Export Candid interface
-
 #[query(name = "__get_candid_interface_tmp_hack")]
 fn export_candid() -> String {
     __export_service()

@@ -3,11 +3,11 @@
   "dfx": "0.17.0",
   "canisters": {
     "personal-health-record-backend": {
-      "type": "rust",
-      "package": "personal-health-record-backend",
-      "build": "cargo build --target wasm32-unknown-unknown --release --package personal-health-record-backend",
+      "type": "custom",
+      "build": ["cargo build --target wasm32-unknown-unknown --release --package personal-health-record-backend"],
+      "wasm": "target/wasm32-unknown-unknown/release/personal_health_record_backend.wasm",
       "candid": "src/personal-health-record-backend/personal-health-record-backend.did",
-      "wasm": "target/wasm32-unknown-unknown/release/personal_health_record_backend.wasm"
+      "shrink": true
     },
     "personal-health-record-frontend": {
       "type": "assets",

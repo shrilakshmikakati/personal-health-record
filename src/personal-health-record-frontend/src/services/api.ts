@@ -2,7 +2,7 @@ import { Actor, HttpAgent } from '@dfinity/agent';
 import { AuthClient } from '@dfinity/auth-client';
 import { Principal } from '@dfinity/principal';
 // Corrected import path based on the provided file structure
-import { idlFactory } from './home/shrilakshmi/personal-health-record/src/personal-health-record-backend/personal-health-record-backend.did.js'; // Corrected path
+import { idlFactory } from './home/shrilakshmi/personal-health-record/src/personal-health-record-backend/personal-health-record-backend.did'; // Corrected path
 import { CreateHealthRecordRequest, UpdateHealthRecordRequest, HealthRecord, ShareRequest } from '../types';
 
 // Define the canister ID - you'll need to replace this with your actual canister ID
