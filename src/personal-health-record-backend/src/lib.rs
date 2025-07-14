@@ -47,8 +47,8 @@ fn get_health_record(record_id: String) -> ApiResponse<HealthRecord> {
     }
     
     match storage::get_health_record(&record_id) {
-        Some(record) => ApiResponse::success(record),
-        None => ApiResponse::error("Record not found".to_string()),
+        Ok(record) => ApiResponse::success(record),
+        Err(e) => ApiResponse::error(e),
     }
 }
 
@@ -170,8 +170,9 @@ fn get_system_stats() -> ApiResponse<HashMap<String, u64>> {
     ApiResponse::success(stats)
 }
 
+ic_cdk::export_candid!();
+
 // Export Candid interface
-candid::export_service!();
 
 #[query(name = "__get_candid_interface_tmp_hack")]
 fn export_candid() -> String {
